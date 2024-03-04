@@ -22,7 +22,6 @@ use App\Http\Controllers\AuthController;
 
 Route::group(["middleware" => ["api"]], function () {
 
-
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
 });
