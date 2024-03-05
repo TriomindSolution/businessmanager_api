@@ -25,6 +25,15 @@ Route::group(["middleware" => ["api"]], function () {
                 Route::delete('/category/delete/{category_id}', 'destroy');
             });
 
+
+      
+            Route::controller(SellerController::class)->group(function () {
+                Route::post('/seller/store', 'sellerStore');
+                Route::put('/seller/update/{seller_id}', 'sellerUpdate');
+                Route::delete('/seller/delete/{seller_id}', 'destroy');
+            });
+    
+
       
         });
 
@@ -32,15 +41,9 @@ Route::group(["middleware" => ["api"]], function () {
 
 
 
-        Route::controller(SellerController::class)->group(function () {
-            Route::post('/seller/store', 'sellerStore');
-            Route::put('/seller/update/{seller_id}', 'sellerUpdate');
-            Route::delete('/seller/delete/{seller_id}', 'destroy');
-        });
-
+      
     });
 
-});
 
 
 
