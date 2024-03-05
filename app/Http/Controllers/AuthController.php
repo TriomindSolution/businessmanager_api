@@ -27,7 +27,6 @@ class AuthController extends Controller
             'except' => [
                 'login',
                 'register'
-
             ],
         ]);
     }
