@@ -21,13 +21,11 @@ Route::group(["middleware" => ["api"]], function () {
           //    ------------------------category route-------------------------
           Route::controller(CategoryController::class)->group(function () {
             Route::post('/category/store', 'categoryStore');
+            Route::put('/category/update/{category_id}', 'categoryUpdate');
+            Route::delete('/category/delete/{category_id}', 'destroy');
+        });
 
-        
 
-
-
-
-    });
 });
 
 
