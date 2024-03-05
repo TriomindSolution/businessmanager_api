@@ -2,71 +2,37 @@
 
 namespace App\Http\Controllers\Backend\Category;
 
+use App\Traits\ResponseTrait;
 use App\Http\Controllers\Controller;
-use App\Models\Category;
+use Illuminate\Database\QueryException;
+use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use App\Models\Category;
 
-class Categorycontroller extends Controller
+class CategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    use ResponseTrait; // Import the ResponseTrait
+
+    public function categoryStore(Request $request)
     {
-        return Category::all();
-    }
+        try {
+            $request->validate([
+                'name' => 'required|string|unique:categories',
+                'status' => 'nullable|string',
+            ]);
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+            $data = [
+                'name' => $request->name,
+                'status' => $request->status, // Use $request->status instead of $request->name
+            ];
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        return Category::create($request->all());
-    }
+            $category = Category::create($data);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        return Category::findOrFail($id);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        $category = Category::findOrFail($id);
-        $category->update($request->all());
-
-        return $category;
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        $category = Category::findOrFail($id);
-        $category->delete();
-
-        return 204; 
+            $message = "Category Created Successfully";
+            return $this->responseSuccess(200, true, $message, $category); // Use responseSuccess method from the ResponseTrait
+        } catch (\Exception $e) {
+            \Log::error($e);
+            return $this->responseError(Response::HTTP_INTERNAL_SERVER_ERROR, false, $e->getMessage()); // Use responseError method from the ResponseTrait
+        }
     }
 }

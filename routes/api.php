@@ -14,9 +14,21 @@ Route::group(["middleware" => ["api"]], function () {
         Route::controller(ProductController::class)->group(function () {
             Route::post('/product/store', 'productStore');
         });
+
+      
+        });
+
+          //    ------------------------category route-------------------------
+          Route::controller(CategoryController::class)->group(function () {
+            Route::post('/category/store', 'categoryStore');
+
+        
+
+
+
+
     });
 });
 
 
 
-Route::apiResource('category', Categorycontroller::class);
