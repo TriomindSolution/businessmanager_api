@@ -18,6 +18,20 @@ Route::group(["middleware" => ["api"]], function () {
             Route::post('/product/store', 'productStore');
         });
 
+        //    ------------------------category api route-------------------------
+               Route::controller(CategoryController::class)->group(function () {
+                Route::post('/category/store', 'categoryStore');
+                Route::put('/category/update/{category_id}', 'categoryUpdate');
+                Route::delete('/category/delete/{category_id}', 'destroy');
+            });
+
+      
+        });
+
+    
+
+
+
         Route::controller(SellerController::class)->group(function () {
             Route::post('/seller/store', 'sellerStore');
             Route::put('/seller/update/{seller_id}', 'sellerUpdate');
@@ -25,8 +39,8 @@ Route::group(["middleware" => ["api"]], function () {
         });
 
     });
+
 });
 
 
 
-Route::apiResource('category', Categorycontroller::class);
