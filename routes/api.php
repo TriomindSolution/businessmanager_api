@@ -14,21 +14,47 @@ Route::group(["middleware" => ["api"]], function () {
 
     Route::group(["middleware" => ["auth:api"]], function () {
 
+        
+           //    ------------------------product api route-------------------------
         Route::controller(ProductController::class)->group(function () {
             Route::post('/product/store', 'productStore');
         });
 
+<<<<<<< HEAD
         Route::controller(SellerController::class)->group(function () {
             Route::get('/seller-list', 'sellerList');
             Route::get('/seller-retrieve/{seller_id}', 'sellerRetrieve');
             Route::post('/seller/store', 'sellerStore');
             Route::put('/seller/update/{seller_id}', 'sellerUpdate');
             Route::delete('/seller/delete/{seller_id}', 'destroy');
+=======
+          //    ------------------------category api route-------------------------
+               Route::controller(CategoryController::class)->group(function () {
+                Route::post('/category/store', 'categoryStore');
+                Route::put('/category/update/{category_id}', 'categoryUpdate');
+                Route::delete('/category/delete/{category_id}', 'destroy');
+            });
+
+              
+          //    ------------------------seller api route-------------------------
+            Route::controller(SellerController::class)->group(function () {
+                Route::post('/seller/store', 'sellerStore');
+                Route::put('/seller/update/{seller_id}', 'sellerUpdate');
+                Route::delete('/seller/delete/{seller_id}', 'destroy');
+            });
+    
+
+      
+>>>>>>> 5ad55fd20582c00dc7617325c29ed10469777f4e
         });
 
+    
+
+
+
+      
     });
-});
 
 
 
-Route::apiResource('category', Categorycontroller::class);
+
