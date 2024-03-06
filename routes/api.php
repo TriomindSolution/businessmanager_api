@@ -19,6 +19,8 @@ Route::group(["middleware" => ["api"]], function () {
         });
 
         Route::controller(SellerController::class)->group(function () {
+            Route::get('/seller-list', 'sellerList');
+            Route::get('/seller-retrieve/{seller_id}', 'sellerRetrieve');
             Route::post('/seller/store', 'sellerStore');
             Route::put('/seller/update/{seller_id}', 'sellerUpdate');
             Route::delete('/seller/delete/{seller_id}', 'destroy');

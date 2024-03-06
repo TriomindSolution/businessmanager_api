@@ -14,33 +14,53 @@ class SellerController extends Controller
 {
     use ResponseTrait;
 
-    public function sellerIndex()
+    // public function sellerList(Request $request)
+    // {
+    //     $sellerData = Seller::latest();
+
+    //     $limit = $request->limit;
+
+    //     $sellerData = $sellerData->paginate($limit ?? 20);
+
+    //     if (!empty($sellerData)) {
+    //         $message = "Succesfully Data Shown";
+    //         return $this->responseSuccess(200, true, $message, $sellerData);
+    //     } else {
+    //         $message = "Something Went Wrong";
+    //         return $this->responseError(403, false, $message);
+    //     }
+    // }
+
+
+    public function sellerList(Request $request)
     {
-        $questionBankData = Seller::get();
+        $limit = $request->input('limit', 20);
 
-        // if ($questionBankData->exists()) {
-        //     if ($request->has('all')) {
-        //         $questionBankData = $questionBankData;
-        //     }
-        //     if ($request->has('pending')) {
-        //         $questionBankData = $questionBankData->where('status', 0);
-        //     }
-        //     if ($request->has('compelete')) {
-        //         $questionBankData = $questionBankData->where('status', 1);
-        //     }
-        // }
-        // $params = $request->all();
-        // $limit = $request->limit;
+        $sellerData = Seller::where('status', 1)->latest()->paginate($limit);
 
-        $questionBankData = $questionBankData->paginate($limit ?? 20);
-
-        if (!empty($questionBankData)) {
-            $message = "Succesfully Data Shown";
-            return $this->responseSuccess(200, true, $message, $questionBankData);
-        } else {
-            $message = "Invalid credentials";
+        // not empty checking
+        if ($sellerData->isEmpty()) {
+            $message = "No seller data found.";
             return $this->responseError(403, false, $message);
         }
+
+        $message = "Successfully data shown";
+        return $this->responseSuccess(200, true, $message, $sellerData);
+    }
+
+
+    public function sellerRetrieve($sellerId)
+    {
+        $sellerData = Seller::where('id', $sellerId)->get();
+
+        // not empty checking
+        if ($sellerData->isEmpty()) {
+            $message = "No seller data found.";
+            return $this->responseError(403, false, $message);
+        }
+
+        $message = "Successfully data shown";
+        return $this->responseSuccess(200, true, $message, $sellerData);
     }
 
 
@@ -59,7 +79,7 @@ class SellerController extends Controller
 
             $product = Seller::create($data);
 
-            $message = "Seller Created Successfully";
+            $message = "Seller created successfully";
             return $this->responseSuccess(200, true, $message, $product);
         } catch (\Exception $e) {
 
@@ -101,7 +121,7 @@ class SellerController extends Controller
             $sellerData = Seller::findOrFail($sellerId);
             if ($sellerData) {
                 $sellerData->delete();
-                $message = "Seller Deleted Succesfully";
+                $message = "Seller deleted succesfully";
 
                 return $this->responseSuccess(200, true, $message, []);
             }
