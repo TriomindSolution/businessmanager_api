@@ -9,7 +9,9 @@ use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use App\Models\Subcategory;
 class SubcategoryController extends Controller
-{
+{  
+
+    use ResponseTrait; //import responsetrait
     public function subcategoryStore(Request $request)
     {
         try {
@@ -28,6 +30,7 @@ class SubcategoryController extends Controller
             $subcategory = Subcategory::create($data);
 
             $message = "Subcategory Created Successfully";
+            
             return $this->responseSuccess(200, true, $message, $subcategory); 
         } catch (\Exception $e) {
             \Log::error($e);

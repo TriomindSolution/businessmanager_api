@@ -16,7 +16,7 @@ Route::group(["middleware" => ["api"]], function () {
     Route::group(["middleware" => ["auth:api"]], function () {
 
         
-           //    ------------------------product api route-------------------------
+    //    ------------------------product api route-------------------
         Route::controller(ProductController::class)->group(function () {
             Route::post('/product/store', 'productStore');
         });
@@ -34,20 +34,24 @@ Route::group(["middleware" => ["api"]], function () {
     
 
    //    ------------------------category api route-------------------------
-   Route::controller(CategoryController::class)->group(function () {
-    Route::post('/category/store', 'categoryStore');
-    Route::put('/category/update/{category_id}', 'categoryUpdate');
-    Route::delete('/category/delete/{category_id}', 'destroy');
-});
+         Route::controller(CategoryController::class)->group(function () {
+         Route::post('/category/store', 'categoryStore');
+         Route::put('/category/update/{category_id}', 'categoryUpdate');
+         Route::delete('/category/delete/{category_id}', 'destroy');
+       });
 
 });
 
    //    ------------------------subcategory api route-------------------------
-    Route::controller(SubcategoryController::class)->group(function () {
-    Route::post('/subcategory/store', 'subcategoryStore');
-    Route::put('/subcategory/update/{subcategory_id}', 'subcategoryUpdate');
-    Route::delete('/subcategory/delete/{subcategory_id}', 'destroy');
+          Route::controller(SubcategoryController::class)->group(function () {
+          Route::post('/subcategory/store', 'subcategoryStore');
+          Route::put('/subcategory/update/{subcategory_id}', 'subcategoryUpdate');
+          Route::delete('/subcategory/delete/{subcategory_id}', 'destroy');
 
 });
+
+
+
+
 
 });
