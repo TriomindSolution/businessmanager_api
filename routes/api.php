@@ -40,15 +40,19 @@ Route::group(["middleware" => ["api"]], function () {
          Route::delete('/category/delete/{category_id}', 'destroy');
        });
 
-});
 
-   //    ------------------------subcategory api route-------------------------
+
+          //    ------------------------subcategory api route-------------------------
           Route::controller(SubcategoryController::class)->group(function () {
-          Route::post('/subcategory/store', 'subcategoryStore');
-          Route::put('/subcategory/update/{subcategory_id}', 'subcategoryUpdate');
-          Route::delete('/subcategory/delete/{subcategory_id}', 'destroy');
+            Route::post('/subcategory/store', 'subcategoryStore');
+            Route::put('/subcategory/update/{subcategory_id}', 'subcategoryUpdate');
+            Route::delete('/subcategory/delete/{subcategory_id}', 'destroy');
+  
+  });
 
 });
+
+
 
 
 
