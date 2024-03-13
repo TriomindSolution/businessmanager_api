@@ -1,6 +1,8 @@
 <?php
 
-use App\Http\Controllers\SubCategory\SubcategoryController;
+
+use App\Http\Controllers\Backend\Expense\ExpenseController;
+use App\Http\Controllers\Backend\Expensecategory\ExpensecategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -40,22 +42,29 @@ Route::group(["middleware" => ["api"]], function () {
          Route::delete('/category/delete/{category_id}', 'destroy');
        });
 
-
-
-          //    ------------------------subcategory api route-------------------------
-          Route::controller(SubcategoryController::class)->group(function () {
-            Route::post('/subcategory/store', 'subcategoryStore');
-            Route::put('/subcategory/update/{subcategory_id}', 'subcategoryUpdate');
-            Route::delete('/subcategory/delete/{subcategory_id}', 'destroy');
+        //    ------------------------expensecategory api route-------------------------
+    Route::controller(ExpensecategoryController::class)->group(function () {
+      Route::post('/expensecategory/store', 'expensecategoryStore');
+      Route::put('/expensecategory/update/{expensecategory_id}', 'expensecategoryUpdate');
+      Route::delete('/expensecategory/delete/{expensecategory_id}', 'destroy');
   
-  });
+  
+     });
+  
+       //-------------------------------------expense--------------------------------------
+    Route::controller(ExpenseController::class)->group(function () {
+      Route::post('/expense/store', 'expenseStore');
+      Route::put('/expense/update/{expense_id}', 'expenseUpdate');
+      Route::delete('/expense/delete/{expense_id}', 'destroy');
+  
+  
+     });
+
 
 });
 
-
-
-
-
+    
+  
 
 
 });
