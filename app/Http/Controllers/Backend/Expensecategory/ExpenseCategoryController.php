@@ -14,17 +14,53 @@ class ExpenseCategoryController extends Controller
 {
     use ResponseTrait;
 
+
+    public function expenseCatgoeryList(Request $request)
+    {
+        $limit = $request->input('limit', 20);
+
+        $expenseCategoryData = ExpenseCategory::where('status', 1)->latest()->paginate($limit);
+
+        // not empty checking
+        if ( $expenseCategoryData ->isEmpty()) {
+            $message = "No expenseCategory data found.";
+            return $this->responseError(403, false, $message);
+        }
+
+        $message = "Successfully data shown";
+        return $this->responseSuccess(200, true, $message,  $expenseCategoryData );
+    }
+
+
+
+    public function expenseCategoryRetrieve($expenseCategoryId)
+    {
+        $expensecategoryData = ExpenseCategory::where('id', $expenseCategoryId)->get();
+
+        // not empty checking
+        if ($expensecategoryData->isEmpty()) {
+            $message = "No expensecategory data found.";
+            return $this->responseError(403, false, $message);
+        }
+
+        $message = "Successfully data shown";
+        return $this->responseSuccess(200, true, $message,    $expensecategoryData);
+    }
+
+
     public function expensecategoryStore(Request $request)
     {
         try {
             $request->validate([
                 'name' => 'required|string|unique:expensecategories',
                 'status' => 'nullable|string',
+                'created_by' => 'nullable|string'
             ]);
 
             $data = [
                 'name' => $request->name,
-                'status' => $request->status, // Use $request->status instead of $request->name
+                'status' => $request->status,
+                'created_by' => auth()->id()
             ];
 
             $expensecategory = Expensecategory::create($data);
