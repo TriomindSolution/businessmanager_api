@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Backend\Expensecategory;
+namespace App\Http\Controllers\Backend\ExpenseCategory;
 
-use App\Models\Expensecategory;
+use App\Models\ExpenseCategory;
 use App\Traits\ResponseTrait;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
-use App\Models\Expensecategorycategory;
 
-class ExpensecategoryController extends Controller
+
+class ExpenseCategoryController extends Controller
 {
     use ResponseTrait;
 
@@ -47,7 +47,7 @@ class ExpensecategoryController extends Controller
                 $expensecategoryData->update([
                     'name' => $request->name ?? $expensecategoryData->name,
                     'status' => $request->status ?? $expensecategoryData->status,
-                    
+
                 ]);
 
                 $message = "expensecategory data has been updated";
@@ -83,5 +83,5 @@ class ExpensecategoryController extends Controller
 
 
 
-    
+
 }
