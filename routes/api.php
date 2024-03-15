@@ -17,25 +17,17 @@ Route::group(["middleware" => ["api"]], function () {
     Route::post('/register', [AuthController::class, 'register']);
 
     Route::group(["middleware" => ["auth:api"]], function () {
-
-
     //    ------------------------product api route-------------------
         Route::controller(ProductController::class)->group(function () {
             Route::post('/product/store', 'productStore');
         });
-
-
            Route::controller(SellerController::class)->group(function () {
             Route::get('/seller-list', 'sellerList');
             Route::get('/seller-retrieve/{seller_id}', 'sellerRetrieve');
             Route::post('/seller/store', 'sellerStore');
             Route::put('/seller/update/{seller_id}', 'sellerUpdate');
             Route::delete('/seller/delete/{seller_id}', 'destroy');
-
      });
-
-
-
    //    ------------------------category api route-------------------------
          Route::controller(CategoriesController::class)->group(function () {
          Route::post('/category/store', 'categoryStore');
@@ -44,30 +36,18 @@ Route::group(["middleware" => ["api"]], function () {
          Route::delete('/category/delete/{category_id}', 'destroy');
          Route::get('/category-retrieve/{category_id}', 'categoryRetrieve');
        });
-
         //    ------------------------expensecategory api route-------------------------
     Route::controller(ExpensecategoryController::class)->group(function () {
       Route::post('/expensecategory/store', 'expensecategoryStore');
       Route::put('/expensecategory/update/{expensecategory_id}', 'expensecategoryUpdate');
       Route::delete('/expensecategory/delete/{expensecategory_id}', 'destroy');
-
-
      });
-
        //-------------------------------------expense--------------------------------------
     Route::controller(ExpenseController::class)->group(function () {
       Route::post('/expense/store', 'expenseStore');
       Route::put('/expense/update/{expense_id}', 'expenseUpdate');
       Route::delete('/expense/delete/{expense_id}', 'destroy');
-
-
      });
-
-
 });
-
-
-
-
 
 });
