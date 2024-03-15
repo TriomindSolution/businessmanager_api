@@ -1,14 +1,15 @@
 <?php
 
 
-use App\Http\Controllers\Backend\Expense\ExpenseController;
-use App\Http\Controllers\Backend\Expensecategory\ExpensecategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Backend\Seller\SellerController;
+use App\Http\Controllers\Backend\Expense\ExpenseController;
 use App\Http\Controllers\Backend\Product\ProductController;
-use App\Http\Controllers\Backend\Category\Categorycontroller;
+use App\Http\Controllers\Backend\Categories\CategoriesController;
+use App\Http\Controllers\Backend\Expensecategory\ExpensecategoryController;
+
 
 Route::group(["middleware" => ["api"]], function () {
 
@@ -17,7 +18,7 @@ Route::group(["middleware" => ["api"]], function () {
 
     Route::group(["middleware" => ["auth:api"]], function () {
 
-        
+
     //    ------------------------product api route-------------------
         Route::controller(ProductController::class)->group(function () {
             Route::post('/product/store', 'productStore');
@@ -33,13 +34,15 @@ Route::group(["middleware" => ["api"]], function () {
 
      });
 
-    
+
 
    //    ------------------------category api route-------------------------
-         Route::controller(CategoryController::class)->group(function () {
+         Route::controller(CategoriesController::class)->group(function () {
          Route::post('/category/store', 'categoryStore');
+         Route::get('/category-list', 'categoryList');
          Route::put('/category/update/{category_id}', 'categoryUpdate');
          Route::delete('/category/delete/{category_id}', 'destroy');
+         Route::get('/category-retrieve/{category_id}', 'categoryRetrieve');
        });
 
         //    ------------------------expensecategory api route-------------------------
@@ -47,24 +50,24 @@ Route::group(["middleware" => ["api"]], function () {
       Route::post('/expensecategory/store', 'expensecategoryStore');
       Route::put('/expensecategory/update/{expensecategory_id}', 'expensecategoryUpdate');
       Route::delete('/expensecategory/delete/{expensecategory_id}', 'destroy');
-  
-  
+
+
      });
-  
+
        //-------------------------------------expense--------------------------------------
     Route::controller(ExpenseController::class)->group(function () {
       Route::post('/expense/store', 'expenseStore');
       Route::put('/expense/update/{expense_id}', 'expenseUpdate');
       Route::delete('/expense/delete/{expense_id}', 'destroy');
-  
-  
+
+
      });
 
 
 });
 
-    
-  
+
+
 
 
 });
