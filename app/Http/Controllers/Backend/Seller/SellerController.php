@@ -72,7 +72,7 @@ class SellerController extends Controller
                 'address' => $request->address,
                 'phone' => $request->phone,
                 'email' => $request->email,
-                'created_by' => auth()->id(),
+                'created_by' => auth()->id(), 
                 'description' => $request->description,
                 'status' => $request->status,
             ];

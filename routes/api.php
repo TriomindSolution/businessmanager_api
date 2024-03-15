@@ -34,30 +34,37 @@ Route::group(["middleware" => ["api"]], function () {
      });
 
 
+        //    ------------------------expensecategory api route-------------------------
+        Route::controller(ExpenseCategoryController::class)->group(function () {
+            Route::get('/expensecategory-list', 'expenseCatgoeryList');
+            Route::get('/expensecategory-retrieve/{expensecategory_id}', 'expenseCategoryRetrieve');
+            Route::post('/expensecategory/store', 'expensecategoryStore');
+            Route::put('/expensecategory/update/{expensecategory_id}', 'expensecategoryUpdate');
+            Route::delete('/expensecategory/delete/{expensecategory_id}', 'destroy');
 
 
-      
+        });
+
+        //-------------------------------------expense--------------------------------------
+        Route::controller(ExpenseController::class)->group(function () {
+            Route::get('/expense-list', 'expenseList');
+            Route::get('/expense-retrieve/{expense_id}', 'expenseRetrieve');
+            Route::post('/expense/store', 'expenseStore');
+            Route::put('/expense/update/{expense_id}', 'expenseUpdate');
+            Route::delete('/expense/delete/{expense_id}', 'destroy');
+
+
+        });
+
+
+
+
+
 
 
 });
 
-  //    ------------------------expensecategory api route-------------------------
-  Route::controller(ExpenseCategoryController::class)->group(function () {
-    Route::post('/expensecategory/store', 'expensecategoryStore');
-    Route::put('/expensecategory/update/{expensecategory_id}', 'expensecategoryUpdate');
-    Route::delete('/expensecategory/delete/{expensecategory_id}', 'destroy');
 
-
-   });
-
-     //-------------------------------------expense--------------------------------------
-  Route::controller(ExpenseController::class)->group(function () {
-    Route::post('/expense/store', 'expenseStore');
-    Route::put('/expense/update/{expense_id}', 'expenseUpdate');
-    Route::delete('/expense/delete/{expense_id}', 'destroy');
-
-
-   });
 
 
 

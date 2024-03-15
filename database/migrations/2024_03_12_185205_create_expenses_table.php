@@ -16,10 +16,12 @@ return new class extends Migration
             $table->string('date');
             $table->decimal('amount',10,2);
             $table->string('details');
+            $table->string('status');
             $table->unsignedBigInteger('expensecategory_id');
             $table->foreign('expensecategory_id')->references('id')->on('expensecategories')->onDelete('cascade');
+            $table->string("created_by")->nullable();
 
-            
+
             $table->timestamps();
         });
     }

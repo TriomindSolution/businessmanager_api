@@ -14,6 +14,47 @@ class ExpenseController extends Controller
 
     use ResponseTrait;
 
+
+
+    public function expenseList(Request $request)
+    {
+        $limit = $request->input('limit', 20);
+
+        $expenseData = Expense::where('status', 1)->latest()->paginate($limit);
+
+        // not empty checking
+        if ($expenseData->isEmpty()) {
+            $message = "No expense data found.";
+            return $this->responseError(403, false, $message);
+        }
+
+        $message = "Successfully data shown";
+        return $this->responseSuccess(200, true, $message, $expenseData);
+    }
+
+
+
+
+
+    public function expenseRetrieve($expenseId)
+    {
+        $expenseData = Expense::where('id', $expenseId)->get();
+
+        // not empty checking
+        if ($expenseData->isEmpty()) {
+            $message = "No expense data found.";
+            return $this->responseError(403, false, $message);
+        }
+
+        $message = "Successfully data shown";
+        return $this->responseSuccess(200, true, $message, $expenseData);
+    }
+
+
+
+
+
+
     public function expenseStore(Request $request)
     {
         try {
@@ -21,7 +62,9 @@ class ExpenseController extends Controller
                 'amount' => 'required|string',
                 'date' => 'required|string',
                 'details'=>'required|string',
+                'status' => 'nullable|string',
                 'expensecategory_id' => 'required|integer',
+                'created_by' => 'nullable|string'
 
 
             ]);
@@ -30,7 +73,9 @@ class ExpenseController extends Controller
                 'amount' => $request->amount,
                 'date' => $request->date,
                 'details'=>$request->details,
-                'expensecategory_id'=>$request->expensecategory_id
+                'status'=>$request->status,
+                'expensecategory_id'=>$request->expensecategory_id,
+                 'created_by' => auth()->id()
 
             ];
 
@@ -55,8 +100,9 @@ class ExpenseController extends Controller
                     'amount' => $request->amount ?? $expenseData->amount,
                     'date' => $request->date ?? $expenseData->date,
                     'details' => $request->details ?? $expenseData->details,
+                    'status' => $request->status ?? $expenseData->status,
                     'expensecategory_id'=>$request->expensecategory_id  ?? $expenseData->expensecategory
-                    
+
                 ]);
 
                 $message = "expense data has been updated";
