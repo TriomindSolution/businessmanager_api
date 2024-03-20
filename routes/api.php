@@ -9,6 +9,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Backend\Seller\SellerController;
 use App\Http\Controllers\Backend\Product\ProductController;
 use App\Http\Controllers\Backend\Category\Categorycontroller;
+use App\Http\Controllers\Backend\Customer\CustomerController;
 
 Route::group(["middleware" => ["api"]], function () {
 
@@ -44,6 +45,7 @@ Route::group(["middleware" => ["api"]], function () {
 
 
         });
+
         //-------------------------------------expense--------------------------------------
         Route::controller(ExpenseController::class)->group(function () {
             Route::get('/expense-list', 'expenseList');
@@ -53,6 +55,16 @@ Route::group(["middleware" => ["api"]], function () {
             Route::delete('/expense/delete/{expense_id}', 'destroy');
 
 
+        });
+
+
+        //-------------------------------------customer--------------------------------------
+        Route::controller(CustomerController::class)->group(function () {
+            Route::post('/customer/store', 'customerStore');
+            Route::put('/customer/update/{customer_id}', 'customerUpdate');
+            Route::delete('/customer/delete/{customer_id}', 'destroy');
+            Route::get('/customer-list', 'customerList');
+            Route::get('/customer-retrieve/{customer_id}', 'customerRetrieve');
         });
 
 
