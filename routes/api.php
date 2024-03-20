@@ -44,7 +44,6 @@ Route::group(["middleware" => ["api"]], function () {
 
 
         });
-
         //-------------------------------------expense--------------------------------------
         Route::controller(ExpenseController::class)->group(function () {
             Route::get('/expense-list', 'expenseList');
