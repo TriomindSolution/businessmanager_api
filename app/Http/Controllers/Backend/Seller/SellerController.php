@@ -14,24 +14,6 @@ class SellerController extends Controller
 {
     use ResponseTrait;
 
-    // public function sellerList(Request $request)
-    // {
-    //     $sellerData = Seller::latest();
-
-    //     $limit = $request->limit;
-
-    //     $sellerData = $sellerData->paginate($limit ?? 20);
-
-    //     if (!empty($sellerData)) {
-    //         $message = "Succesfully Data Shown";
-    //         return $this->responseSuccess(200, true, $message, $sellerData);
-    //     } else {
-    //         $message = "Something Went Wrong";
-    //         return $this->responseError(403, false, $message);
-    //     }
-    // }
-
-
     public function sellerList(Request $request)
     {
         $limit = $request->input('limit', 20);

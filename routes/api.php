@@ -1,15 +1,18 @@
 <?php
 
 
-use App\Http\Controllers\Backend\Expense\ExpenseController;
-use App\Http\Controllers\Backend\Expensecategory\ExpenseCategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Backend\Seller\SellerController;
+use App\Http\Controllers\Backend\Expense\ExpenseController;
 use App\Http\Controllers\Backend\Product\ProductController;
 use App\Http\Controllers\Backend\Category\Categorycontroller;
 use App\Http\Controllers\Backend\Customer\CustomerController;
+use App\Http\Controllers\Backend\Categories\CategoriesController;
+use App\Http\Controllers\Backend\Expensecategory\ExpensecategoryController;
+
+
 
 Route::group(["middleware" => ["api"]], function () {
 
@@ -17,25 +20,27 @@ Route::group(["middleware" => ["api"]], function () {
     Route::post('/register', [AuthController::class, 'register']);
 
     Route::group(["middleware" => ["auth:api"]], function () {
-
-
     //    ------------------------product api route-------------------
         Route::controller(ProductController::class)->group(function () {
             Route::post('/product/store', 'productStore');
         });
-
-
            Route::controller(SellerController::class)->group(function () {
             Route::get('/seller-list', 'sellerList');
             Route::get('/seller-retrieve/{seller_id}', 'sellerRetrieve');
             Route::post('/seller/store', 'sellerStore');
             Route::put('/seller/update/{seller_id}', 'sellerUpdate');
             Route::delete('/seller/delete/{seller_id}', 'destroy');
-
      });
-
-
+   //    ------------------------category api route-------------------------
+         Route::controller(CategoriesController::class)->group(function () {
+         Route::post('/category/store', 'categoryStore');
+         Route::get('/category-list', 'categoryList');
+         Route::put('/category/update/{category_id}', 'categoryUpdate');
+         Route::delete('/category/delete/{category_id}', 'destroy');
+         Route::get('/category-retrieve/{category_id}', 'categoryRetrieve');
+       });
         //    ------------------------expensecategory api route-------------------------
+
         Route::controller(ExpenseCategoryController::class)->group(function () {
             Route::get('/expensecategory-list', 'expenseCatgoeryList');
             Route::get('/expensecategory-retrieve/{expensecategory_id}', 'expenseCategoryRetrieve');
@@ -73,10 +78,10 @@ Route::group(["middleware" => ["api"]], function () {
 
 
 
+
+  
+
+
 });
-
-
-
-
 
 });
