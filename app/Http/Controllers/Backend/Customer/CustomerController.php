@@ -15,21 +15,16 @@ class CustomerController extends Controller
 
     use ResponseTrait;
 
-<<<<<<< HEAD
-=======
 
 
->>>>>>> 681f55b5ecbe6aabafd5ed4a646bef01f3f2d4ef
     public function customerList(Request $request)
     {
         $limit = $request->input('limit', 20);
 
-<<<<<<< HEAD
         $cusData = Customer::latest()->paginate($limit);
 
-=======
-        $cusData = Expense::latest()->paginate($limit);
->>>>>>> 681f55b5ecbe6aabafd5ed4a646bef01f3f2d4ef
+
+     
 
         // not empty checking
         if ($cusData->isEmpty()) {
@@ -43,13 +38,15 @@ class CustomerController extends Controller
 
 
 
-<<<<<<< HEAD
-    public function customerRetrieve($expenseId)
-=======
+
 
 
     public function cusRetrieve($expenseId)
->>>>>>> 681f55b5ecbe6aabafd5ed4a646bef01f3f2d4ef
+
+
+
+    public function cusRetrieve($expenseId)
+
     {
         $cusData = Customer::where('id', $expenseId)->get();
 
@@ -67,7 +64,6 @@ class CustomerController extends Controller
 
 
 
-<<<<<<< HEAD
 
 
 
@@ -76,8 +72,8 @@ class CustomerController extends Controller
 
 
 
-=======
->>>>>>> 681f55b5ecbe6aabafd5ed4a646bef01f3f2d4ef
+
+
     public function customerStore(Request $request)
     {
         try {
