@@ -21,7 +21,10 @@ class CustomerController extends Controller
     {
         $limit = $request->input('limit', 20);
 
-        $cusData = Expense::latest()->paginate($limit);
+        $cusData = Customer::latest()->paginate($limit);
+
+
+     
 
         // not empty checking
         if ($cusData->isEmpty()) {
@@ -37,7 +40,13 @@ class CustomerController extends Controller
 
 
 
+
     public function cusRetrieve($expenseId)
+
+
+
+    public function cusRetrieve($expenseId)
+
     {
         $cusData = Customer::where('id', $expenseId)->get();
 
@@ -50,6 +59,16 @@ class CustomerController extends Controller
         $message = "Successfully data shown";
         return $this->responseSuccess(200, true, $message, $cusData);
     }
+
+
+
+
+
+
+
+
+
+
 
 
 
