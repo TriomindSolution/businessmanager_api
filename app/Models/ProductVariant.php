@@ -2,18 +2,17 @@
 
 namespace App\Models;
 
-use App\Models\ProductVariant;
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Product extends Model
+class ProductVariant extends Model
 {
     use HasFactory;
 
     protected $guarded = [];
 
-    public function productVariants()
-    {
-        return $this->hasMany(ProductVariant::class,'product_id','id');
+    public function products(){
+        return $this->belongsTo(Product::class);
     }
 }
