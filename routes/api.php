@@ -20,6 +20,9 @@ Route::group(["middleware" => ["api"]], function () {
     //    ------------------------product api route-------------------
         Route::controller(ProductController::class)->group(function () {
             Route::post('/product/store', 'productStore');
+            Route::get('/product-list', 'productList');
+            Route::post('/product/update', 'productUpdate');
+            Route::put('/product/update/{product_id}', 'productUpdate');
         });
            Route::controller(SellerController::class)->group(function () {
             Route::get('/seller-list', 'sellerList');

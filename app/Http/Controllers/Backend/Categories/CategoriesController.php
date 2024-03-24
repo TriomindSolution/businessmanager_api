@@ -51,7 +51,8 @@ class CategoriesController extends Controller
     {
         $limit = $request->input('limit', 20);
 
-        $categoryData = Category::with('parent', 'children')->where('status', 1)->latest()->paginate($limit);
+        $categoryData = Category::with('parent', 'children')
+        ->where('status', 1)->latest()->paginate($limit);
 
         if ($categoryData->isEmpty()) {
             $message = "No category data found.";
