@@ -24,7 +24,7 @@ class CustomerController extends Controller
         $cusData = Customer::latest()->paginate($limit);
 
 
-     
+
 
         // not empty checking
         if ($cusData->isEmpty()) {
@@ -35,14 +35,6 @@ class CustomerController extends Controller
         $message = "Successfully data shown";
         return $this->responseSuccess(200, true, $message, $cusData);
     }
-
-
-
-
-
-
-    public function cusRetrieve($expenseId)
-
 
 
     public function cusRetrieve($expenseId)
@@ -59,19 +51,6 @@ class CustomerController extends Controller
         $message = "Successfully data shown";
         return $this->responseSuccess(200, true, $message, $cusData);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public function customerStore(Request $request)
@@ -110,9 +89,6 @@ class CustomerController extends Controller
         }
     }
 
-
-
-
     public function customerUpdate(Request $request, $id)
     {
         $customerData =Customer::findOrFail($id);
@@ -120,14 +96,10 @@ class CustomerController extends Controller
         try {
             if ($customerData) {
                 $customerData->update([
-
                     'name' => $request->name ?? $customerData->name,
                     'phone' => $request->phone ??   $customerData->phone,
                     'address_1'=>$request->address_1 ?? $customerData->address_1,
                     'address_2'=>$request->address_2 ??   $customerData->address_2 ,
-
-
-
 
                 ]);
 
