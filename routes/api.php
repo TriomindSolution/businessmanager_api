@@ -7,10 +7,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Backend\Seller\SellerController;
 use App\Http\Controllers\Backend\Expense\ExpenseController;
 use App\Http\Controllers\Backend\Product\ProductController;
-use App\Http\Controllers\Backend\Category\Categorycontroller;
-use App\Http\Controllers\Backend\Customer\CustomerController;
 use App\Http\Controllers\Backend\Categories\CategoriesController;
-use App\Http\Controllers\Backend\Expensecategory\ExpensecategoryController;
+use App\Http\Controllers\Backend\Expensecategory\ExpenseCategoryController;
 use App\Http\Controllers\Backend\Customer\CustomerController;
 
 
@@ -46,7 +44,7 @@ Route::group(["middleware" => ["api"]], function () {
        });
         //    ------------------------expensecategory api route-------------------------
 
-    Route::controller(ExpensecategoryController::class)->group(function () {
+    Route::controller(ExpenseCategoryController::class)->group(function () {
       Route::post('/expensecategory/store', 'expensecategoryStore');
       Route::put('/expensecategory/update/{expensecategory_id}', 'expensecategoryUpdate');
       Route::delete('/expensecategory/delete/{expensecategory_id}', 'destroy');
@@ -70,7 +68,7 @@ Route::group(["middleware" => ["api"]], function () {
 
 
 
-   
+
       //-------------------------------------customer--------------------------------------
         Route::controller(CustomerController::class)->group(function () {
             Route::post('/customer/store', 'customerStore');
@@ -92,7 +90,6 @@ Route::group(["middleware" => ["api"]], function () {
 
 
 
-  
 
 
 
@@ -105,7 +102,8 @@ Route::group(["middleware" => ["api"]], function () {
 
 
 
-  
+
+
 
 });
 

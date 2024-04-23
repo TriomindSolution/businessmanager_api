@@ -16,8 +16,6 @@ return new class extends Migration
             $table->string('category_name');
             $table->boolean('status')->default(1);
             $table->string("created_by",10)->nullable();
-            $table->unsignedBigInteger('parent_id')->nullable();
-            $table->foreign('parent_id')->references('id')->on('categories')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -13,16 +13,12 @@ use Illuminate\Http\Request;
 class ExpenseCategoryController extends Controller
 {
     use ResponseTrait;
-
-
     public function expenseCatgoeryList(Request $request)
     {
-        $limit = $request->input('limit', 20);
-
-        $expenseCategoryData = ExpenseCategory::where('status', 1)->latest()->paginate($limit);
+        $expenseCategoryData = ExpenseCategory::latest()->get();;
 
         // not empty checking
-        if ( $expenseCategoryData ->isEmpty()) {
+        if ($expenseCategoryData ->isEmpty()) {
             $message = "No expenseCategory data found.";
             return $this->responseError(403, false, $message);
         }
@@ -30,7 +26,6 @@ class ExpenseCategoryController extends Controller
         $message = "Successfully data shown";
         return $this->responseSuccess(200, true, $message,  $expenseCategoryData );
     }
-
 
 
     public function expenseCategoryRetrieve($expenseCategoryId)
@@ -52,7 +47,7 @@ class ExpenseCategoryController extends Controller
     {
         try {
             $request->validate([
-                'name' => 'required|string|unique:expensecategories',
+                'name' => 'required|string|unique:expense_categories',
                 'status' => 'nullable|string',
                 'created_by' => 'nullable|string'
             ]);
@@ -63,7 +58,7 @@ class ExpenseCategoryController extends Controller
                 'created_by' => auth()->id()
             ];
 
-            $expensecategory = Expensecategory::create($data);
+            $expensecategory = ExpenseCategory::create($data);
 
             $message = "Expensecategory Created Successfully";
             return $this->responseSuccess(200, true, $message, $expensecategory); // Use responseSuccess method from the ResponseTrait
@@ -76,14 +71,13 @@ class ExpenseCategoryController extends Controller
 
     public function expensecategoryUpdate(Request $request, $id)
     {
-        $expensecategoryData =Expensecategory::findOrFail($id);
+        $expensecategoryData =ExpenseCategory::findOrFail($id);
 
         try {
             if ($expensecategoryData) {
                 $expensecategoryData->update([
                     'name' => $request->name ?? $expensecategoryData->name,
                     'status' => $request->status ?? $expensecategoryData->status,
-
                 ]);
 
                 $message = "expensecategory data has been updated";

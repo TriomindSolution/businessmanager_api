@@ -18,9 +18,7 @@ class ExpenseController extends Controller
 
     public function expenseList(Request $request)
     {
-        $limit = $request->input('limit', 20);
-
-        $expenseData = Expense::where('status', 1)->latest()->paginate($limit);
+        $expenseData = Expense::where('status', 1)->latest()->get();
 
         // not empty checking
         if ($expenseData->isEmpty()) {
@@ -65,8 +63,6 @@ class ExpenseController extends Controller
                 'status' => 'nullable|string',
                 'expensecategory_id' => 'required|integer',
                 'created_by' => 'nullable|string'
-
-
             ]);
 
             $data = [

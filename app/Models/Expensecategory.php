@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Expensecategory extends Model
+class ExpenseCategory extends Model
 {
 
-     protected $guarded = [];
+    protected $guarded = [];
     use HasFactory;
 
 

@@ -19,12 +19,8 @@ class CustomerController extends Controller
 
     public function customerList(Request $request)
     {
-        $limit = $request->input('limit', 20);
 
-        $cusData = Customer::latest()->paginate($limit);
-
-
-
+        $cusData = Customer::latest()->get();
 
         // not empty checking
         if ($cusData->isEmpty()) {
@@ -73,7 +69,7 @@ class CustomerController extends Controller
                 'phone' => $request->phone,
                 'address_1'=>$request->address_1,
                 'address_2'=>$request->address_2,
-                'customer_code'=>mt_rand(100000, 999999),
+                'customer_code'=>mt_rand(1000000, 9999999),
                 'order_count'=>$request->order_count,
                 'created_by' => auth()->id()
 

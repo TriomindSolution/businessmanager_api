@@ -9,7 +9,7 @@ use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CategoriesController extends Controller
 {
@@ -19,7 +19,6 @@ class CategoriesController extends Controller
         try {
             $rules = [
                 'category_name' => 'required|string|max:255',
-                'parent_id' => 'nullable|exists:categories,id',
                 'status' => 'required|boolean',
             ];
 
@@ -32,7 +31,6 @@ class CategoriesController extends Controller
             $data = [
                 'category_name' => $request->category_name,
                 'created_by' => auth()->id(),
-                'parent_id' => $request->parent_id,
                 'status' => $request->status,
             ];
 
@@ -49,10 +47,8 @@ class CategoriesController extends Controller
 
     public function categoryList(Request $request)
     {
-        $limit = $request->input('limit', 20);
-
-        $categoryData = Category::with('parent', 'children')
-        ->where('status', 1)->latest()->paginate($limit);
+     
+        $categoryData = Category::latest()->get();
 
         if ($categoryData->isEmpty()) {
             $message = "No category data found.";
@@ -66,10 +62,10 @@ class CategoriesController extends Controller
 
     public function categoryRetrieve($categoryId)
     {
-        $categoryData = Category::with('parent', 'children')->where('id', $categoryId)->get();
+        $categoryData = Category::where('id', $categoryId)->get();
 
         // not empty checking
-        if ($categoryData->isEmpty()) {
+        if (!$categoryData) {
             $message = "No category data found.";
             return $this->responseError(403, false, $message);
         }
@@ -80,21 +76,21 @@ class CategoriesController extends Controller
 
     public function categoryUpdate(Request $request, $id)
     {
-        $categoryData = Category::with('parent','children')->findOrFail($id);
-
         try {
-            if ($categoryData) {
-                $categoryData->update([
-                    'category_name' => $request->category_name ?? $categoryData->category_name,
-                    'parent_id' => $request->parent_id ?? $categoryData->parent_id,
-                    'created_by' => auth()->id(),
-                    'status' => $request->status ?? $categoryData->status,
-                ]);
+            $categoryData = Category::findOrFail($id);
 
-                $message = "Category data has been updated";
+            $categoryData->update([
+                'category_name' => $request->category_name ?? $categoryData->category_name,
+                'created_by' => auth()->id(),
+                'status' => $request->status ?? $categoryData->status,
+            ]);
 
-                return $this->responseSuccess(200, true, $message, $categoryData);
-            }
+            $message = "Category data has been updated";
+
+            return $this->responseSuccess(200, true, $message, $categoryData);
+        } catch (ModelNotFoundException $e) {
+            $message = "Category id not found.";
+            return $this->responseError(Response::HTTP_NOT_FOUND, false, $message);
         } catch (QueryException $e) {
             return $this->responseError(Response::HTTP_INTERNAL_SERVER_ERROR, false, $e->getMessage());
         }

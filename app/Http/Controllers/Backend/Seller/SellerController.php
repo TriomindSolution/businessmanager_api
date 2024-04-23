@@ -16,9 +16,7 @@ class SellerController extends Controller
 
     public function sellerList(Request $request)
     {
-        $limit = $request->input('limit', 20);
-
-        $sellerData = Seller::where('status', 1)->latest()->paginate($limit);
+        $sellerData = Seller::where('status', 1)->latest()->get();
 
         // not empty checking
         if ($sellerData->isEmpty()) {
@@ -54,7 +52,7 @@ class SellerController extends Controller
                 'address' => $request->address,
                 'phone' => $request->phone,
                 'email' => $request->email,
-                'created_by' => auth()->id(), 
+                'created_by' => auth()->id(),
                 'description' => $request->description,
                 'status' => $request->status,
             ];
