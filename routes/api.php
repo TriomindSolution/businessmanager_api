@@ -4,12 +4,14 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Backend\Order\OrderController;
 use App\Http\Controllers\Backend\Seller\SellerController;
 use App\Http\Controllers\Backend\Expense\ExpenseController;
 use App\Http\Controllers\Backend\Product\ProductController;
+use App\Http\Controllers\Backend\Customer\CustomerController;
+use App\Http\Controllers\Backend\Admin\AdminDashboardController;
 use App\Http\Controllers\Backend\Categories\CategoriesController;
 use App\Http\Controllers\Backend\Expensecategory\ExpenseCategoryController;
-use App\Http\Controllers\Backend\Customer\CustomerController;
 
 
 
@@ -26,6 +28,10 @@ Route::group(["middleware" => ["api"]], function () {
             Route::get('/product-list', 'productList');
             Route::post('/product/update', 'productUpdate');
             Route::put('/product/update/{product_id}', 'productUpdate');
+            Route::get('/product-retrieve/{product_id}', 'productRetrieve');
+            Route::delete('/product/product_variant/{product_variant_id}/delete', 'productVariantDestroy');
+
+
         });
            Route::controller(SellerController::class)->group(function () {
             Route::get('/seller-list', 'sellerList');
@@ -60,10 +66,6 @@ Route::group(["middleware" => ["api"]], function () {
       Route::delete('/expense/delete/{expense_id}', 'destroy');
       Route::get('/expense-list', 'expenseList');
       Route::get('/expense-retrieve/{expense_id}', 'expenseRetrieve');
-
-
-
-
      });
 
 
@@ -76,18 +78,24 @@ Route::group(["middleware" => ["api"]], function () {
             Route::delete('/customer/delete/{customer_id}', 'destroy');
             Route::get('/customer-list', 'customerList');
             Route::get('/customer-retrieve/{customer_id}', 'customerRetrieve');
-
-
-
-
-
         });
 
 
+        Route::controller(OrderController::class)->group(function () {
+          Route::post('/order/store', 'orderStore');
+          Route::get('/order-retrieve/{order_id}', 'orderRetrieve');
+          Route::get('/order-list', 'orderList');
+          Route::get('/customer-retrieve/{customer_id}', 'customerRetrieve');
+          Route::put('/order/update/{order_id}', 'orderUpdate');
+          Route::delete('/order/order_variant/{order_variant_id}/delete', 'orderVariantDestroy');
+      });
 
 
 
+      Route::controller(AdminDashboardController::class)->group(function () {
+        Route::get('/admin/dashboard-information', 'adminDashboardInformation');
 
+    });
 
 
 
