@@ -33,7 +33,20 @@ class ProductController extends Controller
         $message = "Successfully data shown";
         return $this->responseSuccess(200, true, $message, $productData);
     }
+    public function productRetrieve($productId)
 
+    {
+        $productData = Product::with('productVariants')->where('id', $productId)->get();
+
+        // not empty checking
+        if ($productData->isEmpty()) {
+            $message = "No Product data found.";
+            return $this->responseError(403, false, $message);
+        }
+
+        $message = "Successfully data shown";
+        return $this->responseSuccess(200, true, $message, $productData);
+    }
 
     public function productStore(Request $request)
     {
@@ -346,5 +359,26 @@ class ProductController extends Controller
         Storage::putFileAs($directory, $file, $fileName);
 
         return $fileName;
+    }
+
+
+
+    public function productVariantDestroy($productVariantId)
+    {
+        DB::beginTransaction();
+        try {
+            $productVariant = ProductVariant::where('id', $productVariantId)->first();
+            if ($productVariant != null) {
+                $productVariant->delete();
+                $message = "Product Variant Deleted Successfully";
+                DB::commit();
+                return $this->responseSuccess(200, true, $message, []);
+            } else {
+                $message = "No Data Found";
+                return $this->responseError(404, false, $message);
+            }
+        } catch (QueryException $e) {
+            DB::rollBack();
+        }
     }
 }

@@ -47,7 +47,7 @@ class CategoriesController extends Controller
 
     public function categoryList(Request $request)
     {
-     
+
         $categoryData = Category::latest()->get();
 
         if ($categoryData->isEmpty()) {
@@ -94,5 +94,27 @@ class CategoriesController extends Controller
         } catch (QueryException $e) {
             return $this->responseError(Response::HTTP_INTERNAL_SERVER_ERROR, false, $e->getMessage());
         }
+    }
+
+
+    public function destroy($id)
+    {
+        $category = Category::find($id);
+
+        if (!$category) {
+            $message = "No category data found.";
+            return $this->responseError(403, false, $message);
+        }
+
+        if ($category->products()->count() > 0) {
+            $message = "Cannot delete category because it has products associated with it.";
+            return $this->responseError(403, false, $message);
+        }
+
+
+        $category->delete();
+
+        $message = "Category deleted successfully";
+        return $this->responseSuccess(200, true, $message,[]);
     }
 }
