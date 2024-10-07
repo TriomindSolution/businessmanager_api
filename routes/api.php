@@ -4,6 +4,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Backend\UserController;
 use App\Http\Controllers\Backend\Order\OrderController;
 use App\Http\Controllers\Backend\Seller\SellerController;
 use App\Http\Controllers\Backend\Expense\ExpenseController;
@@ -95,6 +96,19 @@ Route::group(["middleware" => ["api"]], function () {
       Route::controller(AdminDashboardController::class)->group(function () {
         Route::get('/admin/dashboard-information', 'adminDashboardInformation');
 
+
+
+        Route::post('/change-password', [UserController::class, 'changePassword']);
+
+          Route::controller(UserController::class)->group(function () {
+          Route::post('profile-image/upload', 'profileImageUpdate');
+          Route::put('profile-update', 'updateProfile');
+
+          // ----- parent permission-----
+          Route::get('parent-permission/list', 'parentPermissionList');
+          Route::post('/parent-permission/store', 'parentPermissionStore');
+
+      });
     });
 
 
