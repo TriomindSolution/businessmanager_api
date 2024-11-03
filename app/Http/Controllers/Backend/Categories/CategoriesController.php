@@ -91,8 +91,6 @@ class CategoriesController extends Controller
         } catch (ModelNotFoundException $e) {
             $message = "Category id not found.";
             return $this->responseError(Response::HTTP_NOT_FOUND, false, $message);
-        } catch (QueryException $e) {
-            return $this->responseError(Response::HTTP_INTERNAL_SERVER_ERROR, false, $e->getMessage());
         }
     }
 

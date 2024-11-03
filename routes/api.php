@@ -3,18 +3,26 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Backend\UserController;
 use App\Http\Controllers\Backend\Order\OrderController;
+use App\Http\Controllers\RolePermission\RoleController;
 use App\Http\Controllers\Backend\Seller\SellerController;
 use App\Http\Controllers\Backend\Expense\ExpenseController;
 use App\Http\Controllers\Backend\Product\ProductController;
 use App\Http\Controllers\Backend\Customer\CustomerController;
+use App\Http\Controllers\RolePermission\PermissionController;
 use App\Http\Controllers\Backend\Admin\AdminDashboardController;
 use App\Http\Controllers\Backend\Categories\CategoriesController;
+use App\Http\Controllers\RolePermission\ParentPermissionController;
 use App\Http\Controllers\Backend\Expensecategory\ExpenseCategoryController;
 
 
+Route::get('/optimize', function () {
+    $exitCode = Artisan::call('optimize');
+    return '<h1>Optimized class loader</h1>';
+});
 
 
 Route::group(["middleware" => ["api"]], function () {
@@ -109,6 +117,34 @@ Route::group(["middleware" => ["api"]], function () {
           Route::post('/parent-permission/store', 'parentPermissionStore');
 
       });
+      Route::controller(ParentPermissionController::class)->group(function () {
+        // ----- parent permission-----
+        Route::get('parent-permission/list', 'parentPermissionList');
+        Route::post('/parent-permission/store', 'parentPermissionStore');
+        Route::get('/parent-permission/{parentPermission_id}', 'parentPermissionRetrieve');
+        Route::put('/parent-permission/update/{parentPermission_id}', 'parentPermissionUpdate');
+        Route::delete('/parent-permission/{parentPermission_id}/delete', 'destroy');
+    });
+
+    Route::controller(PermissionController::class)->group(function () {
+        // ----- parent permission-----
+        Route::get('permission-list', 'permissionList');
+        Route::post('/permission/store', 'permissionStore');
+        Route::get('/permission/{permission_id}', 'permissionRetrieve');
+        Route::put('/permission/update/{permission_id}', 'permissionUpdate');
+        Route::delete('/permission/{permission_id}/delete', 'destroy');
+    });
+
+    Route::controller(RoleController::class)->group(function () {
+        // ----- parent permission-----
+        Route::get('role-list', 'roleList');
+        Route::post('/role/store', 'roleStore');
+        Route::get('/role/{role_id}', 'roleRetrieve');
+        Route::put('/role/update/{role_id}', 'roleUpdate');
+        Route::delete('/role/{role_id}/delete', 'destroy');
+        Route::get('/parent-permissions-with-role/{role_id}', 'getParentPermissionsWithRole');
+        Route::post('/assign_permission-to-role', 'assignPermissionsToRole');
+    });
     });
 
 

@@ -54,7 +54,7 @@ class CustomerController extends Controller
         try {
             $request->validate([
                 'name' => 'required|string',
-                'phone' => 'required|string',
+                'phone' => 'required|string|unique:customers',
                 'address_1'=>'required|string',
                 'address_2' => 'nullable|string',
                 'customer_code' => 'nullable|integer',

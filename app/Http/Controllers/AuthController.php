@@ -9,10 +9,11 @@ use App\Traits\ResponseTrait;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
+
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 use Illuminate\Support\Facades\Auth;
-
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\QueryException;
 
@@ -49,12 +50,6 @@ class AuthController extends Controller
                 $message = "Invalid email format!";
                 return $this->responseError(403, false, $message);
             }
-
-            // $regex = '/^[^0-9][_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/';
-            // if (preg_match($regex, $request->email)) {
-            //     $message = "Invalid email format!";
-            //     return $this->responseError(403, false, $message);
-            // }
 
             $userExist = User::where('email', $request->email)->first();
 
@@ -95,72 +90,79 @@ class AuthController extends Controller
                 $message = "Already registered, now you can login";
                 return $this->responseError(403, false, $message);
             } else {
-                $message = "This phone number already registered!";
+                $message = "This phone number is already registered!";
                 return $this->responseError(403, false, $message);
             }
         }
 
         if ($request->type != null) {
-            // converts all the uppercase English alphabets present in the string to lowercase
             $type = strtolower($request->type);
-            if ($type === 'user') {
-                $request->validate([
-                    'name' => 'required|string|max:50',
-                    'email' => 'required|string|max:50',
-                    'phone' => 'required|max:11|min:11|regex:/(01)[0-9]{9}/|unique:users',
-                    'type' => 'required',
-                    'password' => 'required|string|min:8', // Add password validation
-                ]);
-            }
+            $request->validate([
+                'name' => 'required|string|max:50',
+                'email' => 'required|string|max:50',
+                'phone' => 'required|max:11|min:11|regex:/(01)[0-9]{9}/|unique:users',
+                'type' => 'required',
+                'password' => 'required|string|min:8',
+                'roles' => 'required|exists:roles,id'
+            ]);
         } else {
             $message = "Type cannot be null";
             return $this->responseError(400, false, $message);
         }
 
         try {
-
             $user = User::create([
                 'name' => $request->name,
                 'phone' => $request->phone,
                 'email' => $request->email,
                 'type' => strtolower($request->type),
-                'password' => Hash::make($request->password), // Hash the password before saving
+                'password' => Hash::make($request->password),
+                // 'roles' => $request->roles,
             ]);
+
+            $role = Role::find($request->roles);
+            if ($role) {
+                $user->assignRole($role->name);
+            } else {
+                return $this->responseError(400, false, "Role does not exist");
+            }
+
             $message = "User Registration Successfully Done";
             return $this->responseSuccess(200, true, $message, $user);
-
         } catch (QueryException $e) {
             return $this->responseError(Response::HTTP_INTERNAL_SERVER_ERROR, false, $e->getMessage());
         }
     }
 
+
     public function refresh()
     {
         return $this->createNewToken(auth()->refresh());
     }
-
     protected function createNewToken($token)
     {
+        $user = auth()->user();
+
+        $roles = $user->roles()->pluck('name');
+
+        // Retrieve permissions and log them
+        // $permissions = $user->getAllPermissions(); // No pluck here for debugging
+        // \Log::info('User permissions:', ['permissions' => $permissions]);
 
         return response()->json([
             'status_code' => 200,
-            'message' => 'Login Succesfull',
+            'message' => 'Login Successful',
             'status' => true,
             'data' => [
-                'user' => auth()->user()->only(
-                    [
-                        'id',
-                        'name',
-                        'phone',
-                        'email',
-                    ]
-                ),
-
+                'user' => $user->only(['id', 'name', 'phone', 'email']),
+                'role' => $roles,
+                // 'permissions' => optional($permissions)->pluck('name') ?? collect(),
                 'access_token' => $token,
                 'token_type' => 'bearer',
                 'expires_in' => Carbon::now()->addMinutes(1440),
             ],
-
         ]);
     }
+
+
 }

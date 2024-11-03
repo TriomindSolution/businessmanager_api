@@ -58,7 +58,7 @@ class ExpenseController extends Controller
         try {
             $request->validate([
                 'amount' => 'required|string',
-                'date' => 'required|string',
+                'date' => 'nullable|string',
                 'details'=>'required|string',
                 'status' => 'nullable|string',
                 'expensecategory_id' => 'required|integer',

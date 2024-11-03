@@ -104,48 +104,4 @@ class UserController extends Controller
     }
 
 
-    //------------ Start Parent Permission  -----------
-    public function parentPermissionList(Request $request)
-    {
-        $parentPermissionData = ParentPermission::get();
-
-        if ($parentPermissionData->isEmpty()) {
-            $message = "No data found.";
-            return $this->responseError(403, false, $message);
-        }
-
-        $message = "Successfully data shown";
-        return $this->responseSuccess(200, true, $message, $parentPermissionData);
-    }
-
-    public function parentPermissionStore(Request $request)
-    {
-        try {
-            $rules = [
-                'name' => 'required|string|max:255',
-                'status' => 'required|boolean',
-            ];
-
-            $validator = Validator::make($request->all(), $rules);
-
-            if ($validator->fails()) {
-                return $this->responseError(Response::HTTP_UNPROCESSABLE_ENTITY, false, $validator->errors()->first());
-            }
-
-            $data = [
-                'name' => $request->name,
-                'created_by' => auth()->id(),
-                'status' => $request->status,
-            ];
-
-            $category = ParentPermission::create($data);
-
-            $message = "Parent Permission Module Created Successfully";
-            return $this->responseSuccess(200, true, $message, $category);
-        } catch (\Exception $e) {
-            \Log::error($e);
-            return $this->responseError(Response::HTTP_INTERNAL_SERVER_ERROR, false, $e->getMessage());
-        }
-    }
-
 }
