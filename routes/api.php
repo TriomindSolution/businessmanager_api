@@ -14,6 +14,7 @@ use App\Http\Controllers\Backend\Product\ProductController;
 use App\Http\Controllers\Backend\Customer\CustomerController;
 use App\Http\Controllers\RolePermission\PermissionController;
 use App\Http\Controllers\Backend\Admin\AdminDashboardController;
+use App\Http\Controllers\Backend\Admin\CompanyProfileController;
 use App\Http\Controllers\Backend\Categories\CategoriesController;
 use App\Http\Controllers\RolePermission\ParentPermissionController;
 use App\Http\Controllers\Backend\Expensecategory\ExpenseCategoryController;
@@ -103,15 +104,10 @@ Route::group(["middleware" => ["api"]], function () {
 
       Route::controller(AdminDashboardController::class)->group(function () {
         Route::get('/admin/dashboard-information', 'adminDashboardInformation');
-
-
-
         Route::post('/change-password', [UserController::class, 'changePassword']);
-
           Route::controller(UserController::class)->group(function () {
           Route::post('profile-image/upload', 'profileImageUpdate');
           Route::put('profile-update', 'updateProfile');
-
           // ----- parent permission-----
           Route::get('parent-permission/list', 'parentPermissionList');
           Route::post('/parent-permission/store', 'parentPermissionStore');
@@ -148,21 +144,14 @@ Route::group(["middleware" => ["api"]], function () {
     });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    Route::controller(CompanyProfileController::class)->group(function () {
+        Route::post('/company-profile/store', 'companyProfileStore');
+        // Route::get('/order-retrieve/{order_id}', 'orderRetrieve');
+        Route::get('/company-profile-list', 'CompanyProfileList');
+        // Route::get('/customer-retrieve/{customer_id}', 'customerRetrieve');
+        Route::post('/company-profile/update/{company_profile_id}', 'update');
+        Route::delete('/company-profile/{company_profile_id}/delete', 'destroy');
+    });
 });
 
 });
