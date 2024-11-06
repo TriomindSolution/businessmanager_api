@@ -40,7 +40,7 @@ Route::group(["middleware" => ["api"]], function () {
             Route::put('/product/update/{product_id}', 'productUpdate');
             Route::get('/product-retrieve/{product_id}', 'productRetrieve');
             Route::delete('/product/product_variant/{product_variant_id}/delete', 'productVariantDestroy');
-
+            Route::delete('/product-delete', 'deleteProduct');
 
         });
            Route::controller(SellerController::class)->group(function () {
@@ -98,7 +98,9 @@ Route::group(["middleware" => ["api"]], function () {
           Route::get('/customer-retrieve/{customer_id}', 'customerRetrieve');
           Route::put('/order/update/{order_id}', 'orderUpdate');
           Route::delete('/order/order_variant/{order_variant_id}/delete', 'orderVariantDestroy');
-      });
+          Route::delete('/order-delete', 'deleteOrder');
+
+        });
 
 
 

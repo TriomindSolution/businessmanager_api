@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers\Backend\Product;
 
-use App\Models\Product;
-use Illuminate\Http\Request;
-use App\Traits\ResponseTrait;
-use Illuminate\Http\Response;
-use App\Models\ProductVariant;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
+use App\Models\OrderProduct;
+use App\Models\Product;
+use App\Models\ProductVariant;
+use App\Traits\ResponseTrait;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
@@ -34,7 +35,6 @@ class ProductController extends Controller
         return $this->responseSuccess(200, true, $message, $productData);
     }
     public function productRetrieve($productId)
-
     {
         $productData = Product::with('productVariants')->where('id', $productId)->get();
 
@@ -137,7 +137,6 @@ class ProductController extends Controller
             return $this->responseError(Response::HTTP_INTERNAL_SERVER_ERROR, false, $e->getMessage());
         }
     }
-
 
     // public function productUpdate(Request $request, $productId)
     // {
@@ -361,8 +360,6 @@ class ProductController extends Controller
         return $fileName;
     }
 
-
-
     public function productVariantDestroy($productVariantId)
     {
         DB::beginTransaction();
@@ -381,4 +378,49 @@ class ProductController extends Controller
             DB::rollBack();
         }
     }
+
+
+
+    public function deleteProduct(Request $request)
+    {
+        $productId = $request->input('product_id');
+
+        $product = Product::find($productId);
+        if (!$product) {
+            $message = "Product Not Found";
+            return $this->responseError(404, false, $message);
+        }
+
+        // Check if any associated orders have order_status = 5
+        $hasEligibleOrder = OrderProduct::where('product_id', $productId)
+            ->whereHas('orders', function ($query) {
+                $query->where('order_status', 5);
+            })
+            ->exists();
+
+        if (!$hasEligibleOrder) {
+            $message = "Product cannot be deleted";
+            return $this->responseError(404, false, $message);
+        }
+
+
+        DB::beginTransaction();
+
+        try {
+            ProductVariant::where('product_id', $productId)->delete();
+            OrderProduct::where('product_id', $productId)->delete();
+            $product->delete();
+
+            DB::commit();
+
+            $message = "Product deleted successfully";
+            return $this->responseSuccess(200, true, $message, []);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $message = "An error occurred while deleting the product";
+            return $this->responseError(500, false, $message, ['error' => $e->getMessage()]);
+        }
+    }
+
 }

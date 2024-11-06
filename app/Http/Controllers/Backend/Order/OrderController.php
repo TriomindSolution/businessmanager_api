@@ -2,20 +2,19 @@
 
 namespace App\Http\Controllers\Backend\Order;
 
-use App\Models\Order;
-use App\Models\Product;
-use App\Models\Customer;
-use App\Models\OrderProduct;
-use Illuminate\Http\Request;
-use App\Traits\ResponseTrait;
-use Illuminate\Http\Response;
-use App\Models\ProductVariant;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Customer;
+use App\Models\Order;
+use App\Models\OrderProduct;
+use App\Models\Product;
+use App\Models\ProductVariant;
+use App\Traits\ResponseTrait;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
@@ -40,7 +39,6 @@ class OrderController extends Controller
     }
 
     public function orderRetrieve($orderId)
-
     {
         $orderData = Order::with('orderVariants', 'orderCustomer')->where('id', $orderId)->get();
 
@@ -63,6 +61,7 @@ class OrderController extends Controller
             'delivery_date' => 'nullable',
             'notes' => 'nullable|string',
             'payment' => 'nullable',
+            'order_status' => 'nullable',
             'payment_method' => 'nullable',
             'payment_from' => 'nullable',
             'shipping_charge' => 'nullable',
@@ -100,6 +99,7 @@ class OrderController extends Controller
                 'delivery_date' => $request->delivery_date,
                 'notes' => $request->notes,
                 'payment' => $request->payment,
+                'order_status' => $request->order_status,
                 'payment_method' => $request->payment_method,
                 'payment_from' => $request->payment_from,
                 'shipping_charge' => $request->shipping_charge,
@@ -112,11 +112,13 @@ class OrderController extends Controller
 
             // Check if customer exists or create a new one
             $customer = Customer::where('phone', $request->phone)->first();
-          
+
             if (!$customer) {
+
                 $prefix = "CUS";
                 $rand_no = mt_rand(1000000, 9999999);
-                $randomNumber = $prefix . $rand_no;
+                $timestamp = time();
+                $randomNumber = $prefix . $rand_no . '-' . $timestamp;
 
                 $customerData = [
                     'name' => $request->name,
@@ -126,7 +128,7 @@ class OrderController extends Controller
                     'address_2' => $request->address_2,
                     'customer_code' => $randomNumber,
                     'created_by' => auth()->id(),
-                    'order_count' => 1 // Initial order count for new customer
+                    'order_count' => 1, // Initial order count for new customer
                 ];
 
                 $customer = Customer::create($customerData);
@@ -173,8 +175,6 @@ class OrderController extends Controller
         }
     }
 
-
-
     public function orderUpdate(Request $request, $orderId)
     {
         // Validation rules
@@ -184,6 +184,7 @@ class OrderController extends Controller
             'delivery_date' => 'nullable',
             'notes' => 'nullable|string',
             'payment' => 'nullable',
+            'order_status' => 'nullable',
             'payment_method' => 'nullable',
             'payment_from' => 'nullable',
             'shipping_charge' => 'nullable',
@@ -222,6 +223,7 @@ class OrderController extends Controller
                 'delivery_date' => $request->delivery_date ?? $order->delivery_date,
                 'notes' => $request->notes ?? $order->notes,
                 'payment' => $request->payment ?? $order->payment,
+                'order_status' => $request->order_status ?? $order->order_status,
                 'payment_method' => $request->payment_method ?? $order->payment_method,
                 'payment_from' => $request->payment_from ?? $order->payment_from,
                 'shipping_charge' => $request->shipping_charge ?? $order->shipping_charge,
@@ -334,6 +336,47 @@ class OrderController extends Controller
             }
         } catch (QueryException $e) {
             DB::rollBack();
+        }
+    }
+
+    public function deleteOrder(Request $request)
+    {
+        $orderId = $request->input('order_id');
+
+        $order = Order::find($orderId);
+        if (!$order) {
+            $message = "Order Not Found";
+            return $this->responseError(404, false, $message);
+        }
+
+        // Check if any associated orders have order_status = 5
+        $hasEligibleOrder = OrderProduct::where('order_id', $orderId)
+            ->whereHas('orders', function ($query) {
+                $query->where('order_status', 5);
+            })
+            ->exists();
+
+        if (!$hasEligibleOrder) {
+            $message = "Order cannot be deleted";
+            return $this->responseError(404, false, $message);
+        }
+
+
+        DB::beginTransaction();
+
+        try {
+            OrderProduct::where('order_id', $orderId)->delete();
+            $order->delete();
+
+            DB::commit();
+
+            $message = "Order deleted successfully";
+            return $this->responseSuccess(200, true, $message, []);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $message = "An error occurred while deleting the order";
+            return $this->responseError(500, false, $message, ['error' => $e->getMessage()]);
         }
     }
 }
