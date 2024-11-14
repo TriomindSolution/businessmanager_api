@@ -28,7 +28,7 @@ return new class extends Migration
             $table->tinyInteger('status')->comment("
             0 inactive,
             1 active,
-            ");
+            ")->nullable;
 
             $table->timestamps();
         });

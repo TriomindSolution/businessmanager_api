@@ -3,20 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-
-use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
+use Illuminate\Database\QueryException;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
-
-use Tymon\JWTAuth\Facades\JWTAuth;
-
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Database\QueryException;
-
+use Spatie\Permission\Models\Role;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
@@ -27,11 +23,10 @@ class AuthController extends Controller
         $this->middleware('auth:api', [
             'except' => [
                 'login',
-                'register'
+                'register',
             ],
         ]);
     }
-
 
     public function login(Request $request)
     {
@@ -78,7 +73,6 @@ class AuthController extends Controller
         }
     }
 
-
     public function register(Request $request)
     {
         $userExist = User::where('phone', $request->phone)
@@ -103,12 +97,13 @@ class AuthController extends Controller
                 'phone' => 'required|max:11|min:11|regex:/(01)[0-9]{9}/|unique:users',
                 'type' => 'required',
                 'password' => 'required|string|min:8',
-                'roles' => 'required|exists:roles,id'
+                'roles' => 'required|exists:roles,id',
             ]);
         } else {
             $message = "Type cannot be null";
             return $this->responseError(400, false, $message);
         }
+        $defaultCompanyId = 1;
 
         try {
             $user = User::create([
@@ -117,6 +112,7 @@ class AuthController extends Controller
                 'email' => $request->email,
                 'type' => strtolower($request->type),
                 'password' => Hash::make($request->password),
+                'default_company_id' => $defaultCompanyId,
                 // 'roles' => $request->roles,
             ]);
 
@@ -133,7 +129,6 @@ class AuthController extends Controller
             return $this->responseError(Response::HTTP_INTERNAL_SERVER_ERROR, false, $e->getMessage());
         }
     }
-
 
     public function refresh()
     {
@@ -163,6 +158,5 @@ class AuthController extends Controller
             ],
         ]);
     }
-
 
 }

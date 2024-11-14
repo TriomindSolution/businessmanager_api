@@ -55,18 +55,18 @@ class CustomerController extends Controller
             $request->validate([
                 'name' => 'required|string',
                 'phone' => 'required|string|unique:customers',
+                'email'=>'nullable|email',
                 'address_1'=>'required|string',
                 'address_2' => 'nullable|string',
                 'customer_code' => 'nullable|integer',
                 'order_count' => 'nullable|string',
                 'created_by' => 'nullable|string'
-
-
             ]);
 
             $data = [
                 'name' => $request->name,
                 'phone' => $request->phone,
+                'email' => $request->email,
                 'address_1'=>$request->address_1,
                 'address_2'=>$request->address_2,
                 'customer_code'=>mt_rand(1000000, 9999999),
@@ -94,9 +94,9 @@ class CustomerController extends Controller
                 $customerData->update([
                     'name' => $request->name ?? $customerData->name,
                     'phone' => $request->phone ??   $customerData->phone,
+                    'email' => $request->email ??   $customerData->email,
                     'address_1'=>$request->address_1 ?? $customerData->address_1,
                     'address_2'=>$request->address_2 ??   $customerData->address_2 ,
-
                 ]);
 
                 $message = "customer data has been updated";

@@ -4,8 +4,8 @@ namespace App\Models;
 
 use App\Models\Customer;
 use App\Models\OrderProduct;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
@@ -20,21 +20,26 @@ class Order extends Model
 
     public function orderVariants()
     {
-        return $this->hasMany(OrderProduct::class,'order_id','id');
+        return $this->hasMany(OrderProduct::class, 'order_id', 'id');
     }
 
     public function orderCustomer()
     {
-        return $this->hasOne(Customer::class,'order_id','id');
+        return $this->hasOne(Customer::class, 'phone', 'customer_phone');
     }
 
     public function scopeCancel($query)
     {
-        return $query->where(['payment' => 5]);
+        return $query->where(['payment' => 5, 'order_status' => 5]);
     }
 
     public function scopePaid($query)
     {
         return $query->where(['payment' => 1]);
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where(['order_status' => 1]);
     }
 }

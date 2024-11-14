@@ -74,16 +74,15 @@ class CompanyProfileService
             'data' => $companyProfile,
         ];
     }
-
-    public function updateCompanyProfile(Request $request, $companyProfileId)
+    public function saveOrUpdateCompanyProfile(Request $request, $companyProfileId = null)
     {
-        // dd($request->all());
+        // Validation rules
         $rules = [
             'name' => 'nullable|string|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'address' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:100|unique:company_profiles,phone,' . $companyProfileId,
-            'email' => 'nullable|string|max:100|unique:company_profiles,email,' . $companyProfileId,
+            'phone' => 'nullable|string|max:100',
+            'email' => 'nullable|string|max:100',
             'website' => 'nullable|string|max:255',
             'company_details' => 'nullable|string|max:255',
             'registration_no' => 'nullable|string|max:255',
@@ -104,30 +103,36 @@ class CompanyProfileService
             ];
         }
 
-        $companyProfile = CompanyProfile::find($companyProfileId);
-        if (!$companyProfile) {
-            return [
-                'success' => false,
-                'message' => 'Company profile not found',
-                'status_code' => 404,
-            ];
+        $user = auth()->user();
+        $companyId = $user->default_company_id;
+
+        $companyProfile = CompanyProfile::where('default_company_id', $companyId)->first();
+
+        // if (!$companyProfile) {
+        //     $companyProfile = new CompanyProfile();
+        //     $companyProfile->default_company_id = $companyId;
+        // }
+
+        $isCreatingNewProfile = !$companyProfile;
+
+        if ($isCreatingNewProfile) {
+            $companyProfile = new CompanyProfile();
+            $companyProfile->default_company_id = $companyId;
         }
-        $logo = null;
+
         if ($request->hasFile('logo')) {
-            // Delete the existing logo file if it exists
             if ($companyProfile->logo) {
                 Storage::delete('public/company_logo/' . $companyProfile->logo);
             }
-
             $image = $request->file('logo');
- 
             $uniqueCode = Str::uuid();
             $companyLogoName = $uniqueCode . '.' . $image->getClientOriginalExtension();
             Storage::putFileAs('public/company_logo', $image, $companyLogoName);
-            $logo = $companyLogoName;
+            $companyProfile->logo = $companyLogoName;
         }
 
-        $companyProfile->update([
+        // Update or set profile attributes
+        $companyProfile->fill([
             'name' => $request->name,
             'address' => $request->address,
             'phone' => $request->phone,
@@ -140,14 +145,15 @@ class CompanyProfileService
             'instagram_url' => $request->instagram_url,
             'linkedin_url' => $request->linkedin_url,
             'status' => $request->status,
-            'logo' => $logo,
         ]);
+        $companyProfile->save();
 
         return [
             'success' => true,
-            'message' => 'Company profile updated successfully',
+            'message' => $isCreatingNewProfile ? 'Company profile created successfully' : 'Company profile updated successfully',
             'status_code' => 200,
             'data' => $companyProfile,
         ];
     }
+
 }

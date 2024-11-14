@@ -88,6 +88,12 @@ class OrderController extends Controller
             return $this->responseError(Response::HTTP_UNPROCESSABLE_ENTITY, false, $validator->errors()->first());
         }
 
+        // Check if invoice_no already exists
+        $existingOrder = Order::where('invoice_no', $request->invoice_no)->first();
+        if ($existingOrder) {
+            return $this->responseError(Response::HTTP_CONFLICT, false, 'Invoice number already exists.');
+        }
+
         DB::beginTransaction();
         try {
             $now = Carbon::now();
@@ -98,6 +104,7 @@ class OrderController extends Controller
                 'invoice_date' => $request->invoice_date,
                 'delivery_date' => $request->delivery_date,
                 'notes' => $request->notes,
+                'customer_phone' => $request->phone,
                 'payment' => $request->payment,
                 'order_status' => $request->order_status,
                 'payment_method' => $request->payment_method,
@@ -122,8 +129,8 @@ class OrderController extends Controller
 
                 $customerData = [
                     'name' => $request->name,
-                    'order_id' => $orderData->id,
                     'phone' => $request->phone,
+                    'email' => $request->email,
                     'address_1' => $request->address_1,
                     'address_2' => $request->address_2,
                     'customer_code' => $randomNumber,
@@ -361,7 +368,6 @@ class OrderController extends Controller
             return $this->responseError(404, false, $message);
         }
 
-
         DB::beginTransaction();
 
         try {
@@ -378,5 +384,19 @@ class OrderController extends Controller
             $message = "An error occurred while deleting the order";
             return $this->responseError(500, false, $message, ['error' => $e->getMessage()]);
         }
+    }
+
+    public function customerInfo(Request $request)
+    {
+
+        $customerData = Customer::where('phone', $request->phone)->first();
+
+        if (!$customerData) {
+            $message = "No data found.";
+            return $this->responseError(403, false, $message);
+        }
+
+        $message = "Successfully data shown";
+        return $this->responseSuccess(200, true, $message, $customerData);
     }
 }
