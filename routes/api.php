@@ -102,6 +102,7 @@ Route::group(["middleware" => ["api"]], function () {
             Route::get('/admin/dashboard-information', 'adminDashboardInformation');
             Route::post('/change-password', [UserController::class, 'changePassword']);
             Route::get('/get-order-stats', 'getOrderStats');
+            Route::get('/get-old-new-customer-stats', 'getOldNewCustomer');
 
             Route::controller(UserController::class)->group(function () {
                 Route::post('profile-image/upload', 'profileImageUpdate');

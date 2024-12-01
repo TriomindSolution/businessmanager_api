@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Backend\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Customer;
 use App\Models\Order;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
@@ -17,146 +16,19 @@ class AdminDashboardController extends Controller
 
         $data = [];
         $largeCards = [];
-        $competition_paid = [];
-        $competition_cancel = [];
-        $newRequest = [];
-        $completeConsultation = [];
-        $consultantScheduleTime = [];
-        $newRegisterCitizen = [];
-        $competition_final = [];
-        $competition_day = [];
-        $monthList = [];
-        $monthData = [];
-        $item = [];
-        $item2 = [];
-        $monthlyItemAll = [];
-
         $totalRevenueAmount = 0;
         $totalOrderCount = Order::count();
         $cancelOrderCount = Order::Cancel()->count();
         $deliveredOrderCount = Order::Paid()->count();
         $pendingOrderCount = Order::Pending()->count();
 
-        // --------  Start Consultant Performance  ------------
-
-        // $paid = DB::table('orders')
-        //     ->where('payment', 1)
-        //     //  ->where(['deleted_at' => null])
-        //     ->selectRaw("DATE_FORMAT(updated_at, '%m') as month")
-        //     ->selectRaw("COUNT(updated_at) as paid")
-        //     ->groupBy('month')
-        //     ->orderBy(DB::raw('MIN(updated_at)'), 'ASC')
-        //     ->get()->toArray();
-        // // return $paid;
-
-        // $cancel = DB::table('orders')
-        //     ->where('payment', 4)
-        //     //  ->where(['deleted_at' => null])
-        //     ->selectRaw("DATE_FORMAT(updated_at, '%m') as month")
-        //     ->selectRaw("COUNT(updated_at) as cancel")
-        //     ->groupBy('month')
-        //     ->orderBy(DB::raw('MIN(updated_at)'), 'ASC')
-        //     ->get()->toArray();
-
-        // //  return $cancel;
-        // $numberOfMonths = 12;
-        // $currentMonth = strtotime('now');
-        // $months = [];
-
-        // for ($i = 0; $i < $numberOfMonths; $i++) {
-        //     $completeMonth[] = date('F', $currentMonth);
-        //     $currentMonth = strtotime('last day of previous month', $currentMonth);
-        // }
-        // // return $completeMonth;
-        // foreach ($completeMonth as $key => $month) {
-        //     // return $month;
-        //     $flag = 0;
-        //     foreach ($paid as $value) {
-        //         if ($value->month == '01') {
-        //             $value->month = "January";
-        //         } else if ($value->month == '02') {
-        //             $value->month = "February";
-        //         } else if ($value->month == '03') {
-        //             $value->month = "March";
-        //         } else if ($value->month == '04') {
-        //             $value->month = "April";
-        //         } else if ($value->month == '05') {
-        //             $value->month = "May";
-        //         } else if ($value->month == '06') {
-        //             $value->month = "June";
-        //         } else if ($value->month == '07') {
-        //             $value->month = "July";
-        //         } else if ($value->month == '08') {
-        //             $value->month = "August";
-        //         } else if ($value->month == '09') {
-        //             $value->month = "September";
-        //         } else if ($value->month == '10') {
-        //             $value->month = "October";
-        //         } else if ($value->month == '11') {
-        //             $value->month = "November";
-        //         } else if ($value->month == '12') {
-        //             $value->month = "December";
-        //         }
-        //         if ($value->month == $month) {
-        //             array_push($monthList, $month);
-        //             array_push($competition_paid, $value->paid);
-        //             $flag = 1;
-        //             break;
-        //         }
-        //     }
-        //     if ($flag == 0) {
-        //         array_push($monthList, $month);
-        //         array_push($competition_paid, 0);
-        //     }
-        // }
-
-        // foreach ($completeMonth as $key => $month) {
-        //     // return $month;
-        //     $flag = 0;
-        //     foreach ($cancel as $value) {
-        //         if ($value->month == '01') {
-        //             $value->month = "January";
-        //         } else if ($value->month == '02') {
-        //             $value->month = "February";
-        //         } else if ($value->month == '03') {
-        //             $value->month = "March";
-        //         } else if ($value->month == '04') {
-        //             $value->month = "April";
-        //         } else if ($value->month == '05') {
-        //             $value->month = "May";
-        //         } else if ($value->month == '06') {
-        //             $value->month = "June";
-        //         } else if ($value->month == '07') {
-        //             $value->month = "July";
-        //         } else if ($value->month == '08') {
-        //             $value->month = "August";
-        //         } else if ($value->month == '09') {
-        //             $value->month = "September";
-        //         } else if ($value->month == '10') {
-        //             $value->month = "October";
-        //         } else if ($value->month == '11') {
-        //             $value->month = "November";
-        //         } else if ($value->month == '12') {
-        //             $value->month = "December";
-        //         }
-        //         if ($value->month == $month) {
-        //             // array_push($monthList, $month);
-        //             array_push($competition_cancel, $value->cancel);
-        //             $flag = 1;
-        //             break;
-        //         }
-        //     }
-        //     if ($flag == 0) {
-        //         // array_push($monthList, $month);
-        //         array_push($competition_cancel, 0);
-        //     }
-        // }
-
-        $topCustomers = Customer::select('customers.phone', 'customers.name', 'customers.order_count')
+        $topCustomers = DB::table('customers')
             ->join('orders', 'customers.phone', '=', 'orders.customer_phone')
+            ->select('customers.phone', 'customers.name', DB::raw('COUNT(orders.id) as order_count'))
             ->where('orders.payment', 1)
             ->where('orders.order_status', 4)
-            ->orderBy('customers.order_count', 'desc')
+            ->groupBy('customers.phone', 'customers.name')
+            ->orderByDesc('order_count')
             ->get();
 
         $topSellingProducts = DB::table('order_products')
@@ -173,15 +45,10 @@ class AdminDashboardController extends Controller
         $paidOrder['paidOrder'] = $deliveredOrderCount;
         $pendingOrder['pendingOrder'] = $pendingOrderCount;
 
-        // $item['month'] = $monthList;
-        // $item['paidOrder'] = $competition_paid;
-        // $item['cancelOrder'] = $competition_cancel;
-        // $monthlyItemAll = [$item];
-
         $largeCards = [$inProgressConsultation, $cancelOrder, $paidOrder, $totalRevenue, $pendingOrder];
 
         $data['firstLayer'] = $largeCards;
-        // $data['orderStatistics'] = $monthlyItemAll;
+
         $data['topPurchasingCustomer'] = $topCustomers;
 
         $data['topSellingProducts'] = $topSellingProducts;
@@ -241,6 +108,66 @@ class AdminDashboardController extends Controller
                     $type == '1' ? "days" : ($type == '2' ? "month" : "year") => $periods,
                     "paidOrder" => $paidOrder,
                     "cancelOrder" => $cancelOrder,
+                ],
+            ],
+        ];
+
+        $message = "Successfully Data Shown";
+        return $this->responseSuccess(200, true, $message, $data);
+    }
+
+    public function getOldNewCustomer(Request $request)
+    {
+        $type = $request->input('type');
+        $groupBy = match ($type) {
+            '1' => "%Y-%m-%d", // by day
+            '2' => "%Y-%m",    // by month
+            '3' => "%Y",       // by year
+            default => "%Y-%m", // Default
+        };
+
+        // Define periods based on the type
+        $periods = match ($type) {
+            '1' => collect(range(0, 29))->map(fn($i) => date('Y-m-d', strtotime("-$i days")))->reverse()->values(),
+            '2' => collect(range(0, 11))->map(fn($i) => date('Y-m', strtotime("-$i months")))->reverse()->values(),
+            '3' => collect(range(0, 4))->map(fn($i) => date('Y', strtotime("-$i years")))->reverse()->values(),
+            default => [],
+        };
+
+        // Fetch all customers grouped by their periods
+        $customers = DB::table('orders')
+            ->where('payment', 1)
+            ->where('order_status', 4)
+            ->selectRaw("customer_phone, DATE_FORMAT(updated_at, '$groupBy') as period, MIN(DATE_FORMAT(updated_at, '$groupBy')) as first_order_period")
+            ->groupBy('customer_phone', 'period')
+            ->get();
+
+        // Initialize results
+        $newCustomers = [];
+        $oldCustomers = [];
+
+        foreach ($periods as $period) {
+            $newCount = $customers
+                ->where('period', $period)
+                ->filter(fn($customer) => $customer->first_order_period === $period)
+                ->count();
+
+            $oldCount = $customers
+                ->where('period', $period)
+                ->filter(fn($customer) => $customer->first_order_period < $period)
+                ->count();
+
+            $newCustomers[] = $newCount;
+            $oldCustomers[] = $oldCount;
+        }
+
+        // Prepare response
+        $data = [
+            "customerStatistics" => [
+                [
+                    $type == '1' ? "days" : ($type == '2' ? "month" : "year") => $periods,
+                    "newCustomers" => $newCustomers,
+                    "oldCustomers" => $oldCustomers,
                 ],
             ],
         ];

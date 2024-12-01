@@ -379,8 +379,6 @@ class ProductController extends Controller
         }
     }
 
-
-
     public function deleteProduct(Request $request)
     {
         $productId = $request->input('product_id');
@@ -399,10 +397,9 @@ class ProductController extends Controller
             ->exists();
 
         if (!$hasEligibleOrder) {
-            $message = "Product cannot be deleted";
+            $message = "Cannot delete Product because it has orders associated with it";
             return $this->responseError(404, false, $message);
         }
-
 
         DB::beginTransaction();
 

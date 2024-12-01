@@ -26,8 +26,11 @@ class OrderController extends Controller
     {
         $limit = $request->input('limit', 20);
 
-        $productData = Order::with('orderVariants', 'orderCustomer')
-            ->latest()->paginate($limit);
+        $productData = Order::with([
+            'orderVariants.product:id,name', 'orderCustomer',
+        ])
+            ->latest()
+            ->paginate($limit);
 
         if ($productData->isEmpty()) {
             $message = "No order data found.";
@@ -40,7 +43,7 @@ class OrderController extends Controller
 
     public function orderRetrieve($orderId)
     {
-        $orderData = Order::with('orderVariants', 'orderCustomer')->where('id', $orderId)->get();
+        $orderData = Order::with('orderVariants.product:id,name', 'orderCustomer')->where('id', $orderId)->get();
 
         // not empty checking
         if ($orderData->isEmpty()) {
